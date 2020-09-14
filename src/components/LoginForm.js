@@ -1,14 +1,27 @@
-import React from "react";
+import React, { useState, useRef } from "react";
 import styled from "styled-components";
+import "react-phone-number-input/style.css";
+import PhoneInput from "react-phone-number-input";
 import LockImage from "../images/lock.jpg";
 const LoginForm = props => {
   const { className } = props;
-
+  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [phoneNumber, setPhoneNumber] = useState("");
+  const loginHeader = "Please login to verify your identity.";
+  const registerHeader = "Register";
+  const onModeChange = e => {
+    setIsLoginMode(!isLoginMode);
+  };
+  const onPhoneNumberChange = value => {
+    setPhoneNumber(value);
+  };
   return (
     <div className={className}>
       <div className="intro-container"></div>
       <form className="login-form">
-        <h2 className="login-msg">Please login to verify your identity.</h2>
+        <h2 className="login-msg">
+          {isLoginMode ? loginHeader : registerHeader}
+        </h2>
         <label htmlFor="email-input">EMAIL</label>
         <input
           id="email-input"
@@ -23,10 +36,38 @@ const LoginForm = props => {
           type="password"
           placeholder="PASSWORD"
         />
-        <button className="login-btn btn">LOGIN</button>
+        {!isLoginMode && (
+          <label htmlFor="confirm-password-input">CONFIRM PASSWORD</label>
+        )}
+        {!isLoginMode && (
+          <input
+            id="confirm-password-input"
+            className="text-input"
+            type="password"
+            placeholder="CONFIRM PASSWORD"
+          />
+        )}
+        {!isLoginMode && (
+          <label htmlFor="phone-number-input">PHONE NUMBER</label>
+        )}
+        {!isLoginMode && (
+          <PhoneInput
+            id="phone-number-input"
+            className="text-input phone-number-input"
+            placeholder="PHONE NUMBER"
+            defaultCountry="US"
+            value={phoneNumber}
+            onChange={onPhoneNumberChange}
+          />
+        )}
+        <button className="login-btn btn">
+          {isLoginMode ? "Login" : "Register"}
+        </button>
         <div className="btm-container">
           <span className="register-label">Not registered?</span>
-          <span className="register-btn btn">Register</span>
+          <span className="register-btn btn" onClick={onModeChange}>
+            {isLoginMode ? "Register" : "Back to Login"}
+          </span>
         </div>
       </form>
     </div>
@@ -76,6 +117,15 @@ export default styled(LoginForm)`
       }
       &:focus {
         outline: none;
+      }
+    }
+    .phone-number-input {
+      input {
+        border: none;
+        margin-left: 0.5rem;
+        &:focus {
+          outline: none;
+        }
       }
     }
     .login-btn {
