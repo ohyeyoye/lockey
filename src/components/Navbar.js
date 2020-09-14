@@ -12,7 +12,7 @@ const Navbar = props => {
 
 export default styled(Navbar)`
   position: absolute;
-  background-color: #fe4a49;
+  background-color: #009fb7;
   width: 100%;
   padding: 0.5rem 1rem;
   display: flex;

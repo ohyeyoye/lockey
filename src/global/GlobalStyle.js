@@ -19,6 +19,11 @@ export default createGlobalStyle`
     font-weight: lighter;
     text-align: center;
   }
+  .btn {
+    &:hover {
+        cursor: pointer;
+    }
+  }
   /* Colors
     red: #FE4A49
     yellow: #FED766
