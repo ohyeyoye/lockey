@@ -1,18 +1,60 @@
 import React, { useState, useRef } from "react";
 import styled from "styled-components";
 import "react-phone-number-input/style.css";
-import PhoneInput from "react-phone-number-input";
+import PhoneInput, { isPossiblePhoneNumber } from "react-phone-number-input";
+import firebase from "../firebase";
 import LockImage from "../images/lock.jpg";
+
 const LoginForm = props => {
   const { className } = props;
-  const [isLoginMode, setIsLoginMode] = useState(true);
+  const [isLoginMode, setIsLoginMode] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState("");
   const loginHeader = "Please login to verify your identity.";
   const registerHeader = "Register";
+  const setupRecaptcha = () =>
+    (window.recaptchaVerifier = new firebase.auth.RecaptchaVerifier(
+      "recaptcha-container",
+      {
+        callback: function (response) {
+          // reCAPTCHA solved, allow signInWithPhoneNumber.
+        },
+      }
+    ));
+  const onSendCode = e => {
+    e.preventDefault();
+    setupRecaptcha();
+    console.log(phoneNumber);
+    var appVerifier = window.recaptchaVerifier;
+    firebase
+      .auth()
+      .signInWithPhoneNumber(phoneNumber, appVerifier)
+      .then(function (confirmationResult) {
+        // SMS sent. Prompt user to type the code from the message, then sign the
+        // user in with confirmationResult.confirm(code).
+        window.confirmationResult = confirmationResult;
+        var code = window.prompt("Enter OTP");
+        confirmationResult
+          .confirm(code)
+          .then(function (result) {
+            // User signed in successfully.
+            var user = result.user;
+            console.log("Signed In");
+          })
+          .catch(function (error) {
+            // User couldn't sign in (bad verification code?)
+            // ...
+          });
+      })
+      .catch(function (error) {
+        // Error; SMS not sent
+        // ...
+      });
+  };
   const onModeChange = e => {
     setIsLoginMode(!isLoginMode);
   };
   const onPhoneNumberChange = value => {
+    console.log(value);
     setPhoneNumber(value);
   };
   return (
@@ -56,10 +98,17 @@ const LoginForm = props => {
             className="text-input phone-number-input"
             placeholder="PHONE NUMBER"
             defaultCountry="US"
+            limitMaxLength={true}
             value={phoneNumber}
             onChange={onPhoneNumberChange}
           />
         )}
+        {!isLoginMode && (
+          <span className="send-code btn" onClick={onSendCode}>
+            Send Code
+          </span>
+        )}
+        {!isLoginMode && <div id="recaptcha-container"></div>}
         <button className="login-btn btn">
           {isLoginMode ? "Login" : "Register"}
         </button>
@@ -93,6 +142,8 @@ export default styled(LoginForm)`
     flex: 3;
     display: flex;
     flex-direction: column;
+    justify-content: center;
+    align-items: center;
     padding: 4rem 2rem;
     font-family: "Montserrat", sans-serif;
 
@@ -103,10 +154,12 @@ export default styled(LoginForm)`
       text-align: center;
     }
     label {
+      width: 100%;
       font-size: 1em;
       margin-bottom: 0.5rem;
     }
     .text-input {
+      width: 100%;
       font-size: 0.8em;
       padding: 0.5rem;
       margin-bottom: 1rem;
@@ -128,7 +181,12 @@ export default styled(LoginForm)`
         }
       }
     }
+    .send-code {
+      font-size: 0.8em;
+      color: #009fb7;
+    }
     .login-btn {
+      width: 100%;
       padding: 0.75rem;
       font-size: 1.2em;
       border: none;
