@@ -24,11 +24,12 @@ export default createGlobalStyle`
         cursor: pointer;
     }
   }
-  /* Colors
-    red: #FE4A49
-    yellow: #FED766
-    blue: #009FB7
-    gray: #E6E6EA
-    lightGray: #F4F4F8
-  */
+  .shadow {
+    box-shadow: 0 0 0.5rem rgba(0, 0, 0, 0.1); 
+  }
+  .smooth-image {
+    transition: opacity 1s; 
+  }
+  .image-visible {opacity: 1}
+  .image-hidden {opacity: 0}
 `;

@@ -1,3 +1,5 @@
 import Navbar from "./Navbar";
 import LoginForm from "./LoginForm";
-export { Navbar, LoginForm };
+import HomeContent from "./HomeContent";
+import Loading from "./Loading";
+export { Navbar, LoginForm, HomeContent, Loading };

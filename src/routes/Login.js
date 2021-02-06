@@ -1,9 +1,14 @@
 import React from "react";
+import { Redirect } from "react-router-dom";
 import styled from "styled-components";
 import { LoginForm } from "../components";
+import { auth } from "../firebase";
+
 const Login = props => {
   const { className } = props;
-  return (
+  return auth.currentUser ? (
+    <Redirect to="/" />
+  ) : (
     <div className={className}>
       <LoginForm />
     </div>
